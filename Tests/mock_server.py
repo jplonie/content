@@ -174,7 +174,7 @@ class MITMProxy:
 
     PROXY_PORT = '9997'
     MOCKS_TMP_PATH = '/tmp/Mocks/'
-    MOCKS_GIT_PATH = 'content-test-data/'
+    MOCKS_GIT_PATH = f'{AMIConnection.REMOTE_HOME}content-test-data/'
 
     def __init__(self, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH):
@@ -264,7 +264,7 @@ class MITMProxy:
         """
         src_filepath = os.path.join(self.tmp_folder, get_mock_file_path(playbook_id))
         src_files = os.path.join(self.tmp_folder, get_folder_path(playbook_id) + '*')
-        dst_folder = os.path.join(AMIConnection.REMOTE_HOME, self.repo_folder, get_folder_path(playbook_id))
+        dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
             prints_manager.add_print_job('Mock file not created!', print, thread_index)
@@ -441,16 +441,10 @@ class MITMProxy:
         path = path or self.current_folder
         folder_path = get_folder_path(playbook_id)
 
-        repo_problem_keys_path = os.path.join(AMIConnection.REMOTE_HOME,
-                                              self.repo_folder,
-                                              folder_path,
-                                              'problematic_keys.json')
-        current_problem_keys_path = os.path.join(AMIConnection.REMOTE_HOME,
-                                                 path,
-                                                 folder_path,
-                                                 'problematic_keys.json')
-        log_file_path = os.path.join(AMIConnection.REMOTE_HOME, path, get_log_file_path(playbook_id, record))
-        mock_file_path = os.path.join(AMIConnection.REMOTE_HOME, path, get_mock_file_path(playbook_id))
+        repo_problem_keys_path = os.path.join(self.repo_folder, folder_path, 'problematic_keys.json')
+        current_problem_keys_path = os.path.join(path, folder_path, 'problematic_keys.json')
+        log_file_path = os.path.join(path, get_log_file_path(playbook_id, record))
+        mock_file_path = os.path.join(path, get_mock_file_path(playbook_id))
 
         file_content = ''
         file_content += f'export KEYS_FILE_PATH="{current_problem_keys_path if record else repo_problem_keys_path}"\n'
